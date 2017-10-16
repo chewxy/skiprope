@@ -1,3 +1,4 @@
+// package skiprope provides rope-like data structure for efficient manipulation of large strings.
 package skiprope
 
 import (
