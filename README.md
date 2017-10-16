@@ -39,10 +39,10 @@ Please send a pull request :)
 There is a benchmark mini-library that is not required, but here are the results:
 
 ```
-go test -run=. -bench=. -benchmem -benchtime=1s -cpuprofile=test.prof 2> err.txt
-BenchmarkNaiveRandomInsert-2   	   10000	    147266 ns/op	   89482 B/op	       6 allocs/op
-BenchmarkRopeRandomInsert-2    	 5000000	       425 ns/op	      63 B/op	       0 allocs/op
-BenchmarkERopeRandomInsert-2   	  500000	      2156 ns/op	    1161 B/op	      25 allocs/op
+go test -run=. -bench=. -benchmem -benchtime=1s 2>err.txt
+BenchmarkNaiveRandomInsert-8   	   10000	    136441 ns/op	   89482 B/op	       6 allocs/op
+BenchmarkRopeRandomInsert-8    	 5000000	       374 ns/op	      66 B/op	       0 allocs/op
+BenchmarkERopeRandomInsert-8   	 1000000	      2109 ns/op	    1161 B/op	      25 allocs/op
 PASS
 ```
 
