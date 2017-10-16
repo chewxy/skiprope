@@ -21,4 +21,5 @@ before_install:
   - go get github.com/mattn/goveralls
 
 script:
-  - $HOME/gopath/bin/goveralls -service=travis-ci
+  - go test -run=. -coverprofile=profile.cov
+  - $HOME/gopath/bin/goveralls -coverprofile=profile.cov -service=travis-ci

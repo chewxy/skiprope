@@ -1,4 +1,4 @@
-# SkipRope #
+# SkipRope [![GoDoc](https://godoc.org/github.com/chewxy/skiprope?status.svg)](https://godoc.org/github.com/chewxy/skiprope) [![Build Status](https://travis-ci.org/chewxy/skiprope.svg?branch=master)](https://travis-ci.org/chewxy/skiprope) [![Coverage Status](https://coveralls.io/repos/github/chewxy/skiprope/badge.svg?branch=master)](https://coveralls.io/github/chewxy/skiprope?branch=master) #
 
 package `skiprope` is an implementation of the [rope](https://en.wikipedia.org/wiki/Rope_%28data_structure%29) data structure. It's not strictly a rope as per se. It's not built on top of a binary tree like most rope data structures are. 
 
