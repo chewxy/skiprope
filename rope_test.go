@@ -3,7 +3,6 @@ package skiprope
 import (
 	"bytes"
 	"fmt"
-	"log"
 	"testing"
 	"testing/quick"
 	"unicode"
@@ -54,44 +53,59 @@ func TestEmptyRope(t *testing.T) {
 }
 
 func TestPlay(t *testing.T) {
+	// t.Skip()
 	r := New()
 	if err := r.Insert(0, "0123456789 hello world ab2cdefghi fakk1 eir3d"); err != nil {
 		t.Fatal(err)
 	}
 	rs := r.SubstrRunes(5, 18)
-	log.Printf("%v \t %q", rs, string(rs))
+	if string(rs) != "56789 hello w" {
+		t.Errorf("Expected %q. Got %q instead", "56789 hello w", string(rs))
+	}
 
 	r.InsertRunes(10, []rune("ADDED"))
 	rs = r.SubstrRunes(0, r.size)
-	log.Printf("%v \t %q", rs, string(rs))
+	if string(rs) != "0123456789ADDED hello world ab2cdefghi fakk1 eir3d" {
+		t.Error("Add failed. Got %q instead", string(rs))
+	}
 
 	// erase "ADDED"
 	if err := r.EraseAt(10, 5); err != nil {
 		t.Error(err)
 	}
 	rs = r.SubstrRunes(0, r.size)
-	log.Printf("%v \t %q", rs, string(rs))
+	if string(rs) != "0123456789 hello world ab2cdefghi fakk1 eir3d" {
+		t.Errorf("Erase failed. Got %q instead", string(rs))
+	}
 }
 
 func TestPlay2(t *testing.T) {
+	// t.Skip()
 	r := New()
 	if err := r.Insert(0, "short"); err != nil {
 		t.Fatal(err)
 	}
-	log.Printf("%q", r.String())
 	if err := r.Insert(5, "short"); err != nil {
 		t.Fatal(err)
 	}
-	log.Printf("size: %d", r.size)
-	log.Printf("%q", r.String())
+	if r.Size() != 10 {
+		t.Errorf("Expected size of rope to be 10. Got %d instead", r.Size())
+	}
+	if r.Runes() != 10 {
+		t.Errorf("Expected size of rope to be 10. Got %d instead", r.Runes())
+	}
+	if r.String() != "shortshort" {
+		t.Errorf("Expected rope value to be \"shortshort\". Got %q instead", r.String())
+	}
 
 	sss := "this is a super long string of characters inserted into the middle "
-	log.Printf("Super long %d", len(sss))
 	if err := r.Insert(5, sss); err != nil {
 		t.Fatal(err)
 	}
-	log.Printf("%d || %d", r.Size(), len(sss))
-	log.Printf("%q", r.String())
+	if r.String() != "short"+sss+"short" {
+		t.Errorf("Insertion failed. Got %q instead", r.String())
+	}
+	assert.Equal(t, "short"+sss+"short", r.String())
 }
 
 func TestQC(t *testing.T) {
@@ -125,7 +139,7 @@ func TestQC(t *testing.T) {
 
 		return true
 	}
-	if err := quick.Check(f, nil); err != nil {
+	if err := quick.Check(f, &quick.Config{MaxCount: 2000}); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -199,9 +213,7 @@ func TestByteOffset(t *testing.T) {
 
 func ExampleBasic() {
 	r := New()
-	if err := r.Insert(0, "Hello World. This is a long sentence. The purpose of this long sentence is to make sure there is more than BucketSize worth of runes"); err != nil {
-		fmt.Printf("Error: %v\n", err)
-	}
+	_ = r.Insert(0, "Hello World. This is a long sentence. The purpose of this long sentence is to make sure there is more than BucketSize worth of runes")
 
 	char := r.Index(70)
 	fmt.Printf("Char at 70: %q\n", char)
@@ -215,11 +227,23 @@ func ExampleBasic() {
 	//
 }
 
+func ExampleRope_SubstrBytes_Multibyte() {
+	r := New()
+	_ = r.Insert(0, "你好world")
+	// The string is a 11 byte string. Both chinese characters are 3 bytes each.
+
+	// The SubstrBytes method indexes by runes.
+	// if we want only "好", we'd have to call SubstrBytes(1, 2),
+	// not SubstrBytes(3,6), which is what you'd do if it indexes by bytes.
+	bytes := r.SubstrBytes(1, 2)
+	fmt.Println(string(bytes))
+	// Output:
+	// 好
+}
+
 func ExampleRope_Before() {
 	r := New()
-	if err := r.Insert(0, "Hello World. This is a long sentence. The purpose of this long sentence is to make sure there is more than BucketSize worth of runes"); err != nil {
-		fmt.Printf("Error: %v\n", err)
-	}
+	_ = r.Insert(0, "Hello World. This is a long sentence. The purpose of this long sentence is to make sure there is more than BucketSize worth of runes")
 	before, char, err := r.Before(70, unicode.IsSpace)
 	if err != nil {
 		fmt.Printf("Error: cannot get before 70: %v", err)
