@@ -24,10 +24,6 @@ The `linebuf` is essentially a list of offsets to a newline character. The main 
 
 I do not think it to be wise to add it to the core data structure.
 
-## Why does this not deal with `[]byte` ##
-
-Strings are hard, man. Very hard. For more information on strings in Go, read the [excellent blog post by Rob Pike](https://blog.golang.org/strings). If you happen to be fortunate enough to be working on areas where only ASCII text is used, then I'd advise you to fork this library and do a search-and-replace of `[]rune` to `[]byte`. 
-
 ## When is `*Rope` going to implement `io.Writer` and `io.Reader`? ##
 
 The main reason why I didn't do it was mostly because I didn't need it. However, I've been asked about this before. I personally don't have the bandwidth to do it.
@@ -52,3 +48,5 @@ This package started its life as a textbook binary-tree data structure for anoth
 I started by moving more and more things off the heap, and onto the stack. As I wondered how to incorporate a search structure using a skiplist, I stumbled onto a well developed library for C, [librope](https://github.com/josephg/librope).
 
 It had everything I had wanted: a rope-like structure, using skiplists to find nodes, minimal allocations on heap, and a solution to my problem wrt keeping the skiplists off heap. The solution turned out to be to be the `skiplist` data structure, without a pointer. So I ended up adapting most of Joseph Gentle's algorithm. So this library owes most of its work to Joseph Gentle. 
+
+Hours before releasing this library, I had a consult by Egon Elbre, who gave good advice on whether just sticking with `[]rune` was a good idea. He managed to convince me that it isn't, so the first pull request was made to update this library to deal with `[]byte` instead. As a result, memory use went down 40B/op at the cost of an increase of about 30 ns/op. The number can be further shaved down with better optimizations.
