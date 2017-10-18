@@ -3,7 +3,7 @@ package skiprope
 import (
 	"unicode/utf8"
 
-	"github.com/pkg/errors"
+	"errors"
 	// "log"
 )
 
@@ -62,7 +62,7 @@ func (s *skiplist) newKnot(data []byte, runeCount int) {
 // find is the generic skip list finding function. It returns the offsets and skipped bytes.
 func (s *skiplist) find(point int) (retVal *knot, offsetBytes, skippedBytes int, err error) {
 	if point > s.r.runes {
-		return nil, -1, -1, errors.Errorf("Index out of bounds")
+		return nil, -1, -1, errors.New("Index out of bounds")
 	}
 
 	k := &s.r.Head
@@ -98,7 +98,7 @@ func (s *skiplist) find(point int) (retVal *knot, offsetBytes, skippedBytes int,
 // find2 is a method that finds blocks for insertion and deletion. No counts for byteoffsets required.
 func (s *skiplist) find2(point int) (retVal *knot, err error) {
 	if point > s.r.runes {
-		return nil, errors.Errorf("Index out of bounds")
+		return nil, errors.New("Index out of bounds")
 	}
 
 	k := &s.r.Head

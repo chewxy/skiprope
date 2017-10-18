@@ -151,7 +151,7 @@ func (r *Rope) Insert(at int, str string) error {
 	return r.InsertBytes(at, []byte(str))
 }
 
-// Erase erases n runes starting from the point.
+// EraseAt erases n runes starting from the point.
 func (r *Rope) EraseAt(point, n int) (err error) {
 	if point > r.runes {
 		point = r.runes

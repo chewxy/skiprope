@@ -6,6 +6,24 @@ Instead it's built on top of a [skip list](https://en.wikipedia.org/wiki/Skip_li
 
 This library is quite complete as it is (it has all the functions and I need for my projects). However, any addition, corrections etc are welcome. Please see CONTRIBUTING.md for more information on how to contribute. 
 
+# Installing #
+
+This package is go-gettable: `go get -u github.com/chewxy/skiprope`. 
+
+This package is versioned with SemVer 2.0, and does not have any external dependencies except for testing (of which the fantastic [`assert`](https://github.com/stretchr/testify) package is used).
+
+# Usage #
+
+```
+r := skiprope.New()
+if err := r.Insert(0, "Hello World! Hello, 世界"); err != nil {
+	// handle error
+}
+if err  := r.Insert(5, "there "); err != nil {
+	// handle error
+}
+fmt.Println(r.String()) // "Hello there World! Hello, 世界"
+```
 
 # FAQ #
 
