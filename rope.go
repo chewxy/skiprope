@@ -41,10 +41,6 @@ func newKnot(height int) *knot {
 	}
 }
 
-func (k knot) GoString() string {
-	return fmt.Sprintf("Data: %q | (Height %d, Used %d) | %v", string(k.data[:]), k.height, k.used, k.nexts)
-}
-
 type skipknot struct {
 	*knot
 	skipped      int // number of bytes between the start and current node and the start of the next
@@ -69,11 +65,20 @@ func New() *Rope {
 // Size is the length of the rope.
 func (r *Rope) Size() int { return r.size }
 
+// Runes is the number of runes in the rope
+func (r *Rope) Runes() int { return r.runes }
+
 // SubstrRunes is like Substr, but returns []rune
 func (r *Rope) SubstrRunes(pointA, pointB int) []rune {
 	return []rune(string(r.SubstrBytes(pointA, pointB)))
 }
 
+// SubstrBytes returns a byte slice given the "substring" of the rope.
+// Both pointA and pointB refers to the rune, not the byte offset.
+//
+// Example: "你好world" has a length of 11 bytes. If we only want "好",
+// we'd have to call SubstrBytes(1, 2), not SubstrBytes(3, 6) which you would if you
+// were dealing with pure bytes
 func (r *Rope) SubstrBytes(pointA, pointB int) []byte {
 	lastPos := r.runes
 	a := clamp(min(pointA, pointB), 0, lastPos)
@@ -126,6 +131,7 @@ func (r *Rope) InsertRunes(point int, data []rune) (err error) {
 	return r.InsertBytes(point, []byte(string(data)))
 }
 
+// InsertBytes inserts the bytes at the point.
 func (r *Rope) InsertBytes(point int, data []byte) (err error) {
 	if point > r.runes {
 		point = r.runes
@@ -145,6 +151,7 @@ func (r *Rope) Insert(at int, str string) error {
 	return r.InsertBytes(at, []byte(str))
 }
 
+// Erase erases n runes starting from the point.
 func (r *Rope) EraseAt(point, n int) (err error) {
 	if point > r.runes {
 		point = r.runes
@@ -161,6 +168,7 @@ func (r *Rope) EraseAt(point, n int) (err error) {
 	return nil
 }
 
+// Index returns the rune at the given index.
 func (r *Rope) Index(at int) rune {
 	s := skiplist{r: r}
 	var k *knot
@@ -178,6 +186,7 @@ func (r *Rope) Index(at int) rune {
 	return char
 }
 
+// String returns the rope as a full string.
 func (r *Rope) String() string {
 	return r.Substr(0, r.runes)
 }
@@ -217,9 +226,9 @@ func (r *Rope) Before(at int, fn func(r rune) bool) (retVal int, retRune rune, e
 	for {
 		for it := &r.Head; it != nil; it = it.nexts[0].knot {
 			if it == k {
-				if prev == nil {
-					prev = it
-				}
+				// if prev == nil {
+				// 	prev = it
+				// }
 				break
 			}
 			prev = it
@@ -234,9 +243,9 @@ func (r *Rope) Before(at int, fn func(r rune) bool) (retVal int, retRune rune, e
 			befores += size
 		}
 		k = prev
-		if k == &r.Head {
-			break
-		}
+		// if k == &r.Head {
+		// 	break
+		// }
 	}
 	return
 }

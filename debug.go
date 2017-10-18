@@ -53,3 +53,11 @@ func logf(format string, others ...interface{}) {
 		// _logger_.Printf(format, others...)
 	}
 }
+
+func (k knot) GoString() string {
+	return fmt.Sprintf("Data: %q | (Height %d, Used %d) | %v", string(k.data[:]), k.height, k.used, k.nexts)
+}
+
+func (s skipknot) GoString() string {
+	return fmt.Sprintf("%#v | skipped %v", s.knot, s.skipped)
+}
