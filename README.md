@@ -24,10 +24,6 @@ The `linebuf` is essentially a list of offsets to a newline character. The main 
 
 I do not think it to be wise to add it to the core data structure.
 
-## Why does this not deal with `[]byte` ##
-
-Strings are hard, man. Very hard. For more information on strings in Go, read the [excellent blog post by Rob Pike](https://blog.golang.org/strings). If you happen to be fortunate enough to be working on areas where only ASCII text is used, then I'd advise you to fork this library and do a search-and-replace of `[]rune` to `[]byte`. 
-
 ## When is `*Rope` going to implement `io.Writer` and `io.Reader`? ##
 
 The main reason why I didn't do it was mostly because I didn't need it. However, I've been asked about this before. I personally don't have the bandwidth to do it.
@@ -36,13 +32,13 @@ Please send a pull request :)
 
 # Benchmarks #
 
-There is a benchmark mini-library that is not required, but here are the results:
+There is a benchmark mini-program that is not required for the running, but here are the results:
 
 ```
-go test -run=. -bench=. -benchmem -benchtime=1s 2>err.txt
-BenchmarkNaiveRandomInsert-8   	   10000	    136441 ns/op	   89482 B/op	       6 allocs/op
-BenchmarkRopeRandomInsert-8    	 5000000	       374 ns/op	      66 B/op	       0 allocs/op
-BenchmarkERopeRandomInsert-8   	 1000000	      2109 ns/op	    1161 B/op	      25 allocs/op
+go test -run=^$ -bench=. -benchmem -cpuprofile=test.prof
+BenchmarkNaiveRandomInsert-8   	   50000	     37774 ns/op	      15 B/op	       0 allocs/op
+BenchmarkRopeRandomInsert-8    	 3000000	       407 ns/op	      27 B/op	       0 allocs/op
+BenchmarkERopeRandomInsert-8   	 1000000	      2143 ns/op	    1161 B/op	      25 allocs/op
 PASS
 ```
 
@@ -52,3 +48,5 @@ This package started its life as a textbook binary-tree data structure for anoth
 I started by moving more and more things off the heap, and onto the stack. As I wondered how to incorporate a search structure using a skiplist, I stumbled onto a well developed library for C, [librope](https://github.com/josephg/librope).
 
 It had everything I had wanted: a rope-like structure, using skiplists to find nodes, minimal allocations on heap, and a solution to my problem wrt keeping the skiplists off heap. The solution turned out to be to be the `skiplist` data structure, without a pointer. So I ended up adapting most of Joseph Gentle's algorithm. So this library owes most of its work to Joseph Gentle. 
+
+Hours before releasing this library, I had a consult by Egon Elbre, who gave good advice on whether just sticking with `[]rune` was a good idea. He managed to convince me that it isn't, so the first pull request was made to update this library to deal with `[]byte` instead. As a result, memory use went down 40B/op at the cost of an increase of about 30 ns/op. The number can be further shaved down with better optimizations.

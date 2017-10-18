@@ -93,14 +93,19 @@ func BenchmarkNaiveRandomInsert(b *testing.B) {
 
 		if i%25 == 0 {
 			randTrack++
-			if randTrack >= len(randoms) {
+			if randTrack > len(randoms) {
 				randTrack = 0
 			}
-			at = randoms[randTrack]
+			for at = randoms[randTrack]; at >= buf.Len(); at = randoms[randTrack] {
+				randTrack++
+				if randTrack > len(randoms) {
+					randTrack = 0
+				}
+			}
 			buf.EraseAt(at, len(rs))
 		}
 		randTrack++
-		if randTrack >= len(randoms) {
+		if randTrack > len(randoms) {
 			randTrack = 0
 		}
 	}

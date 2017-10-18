@@ -2,6 +2,8 @@ package benchropes
 
 import (
 	"bytes"
+	"unicode/utf8"
+
 	er "github.com/eugene-eeo/rope"
 )
 
@@ -42,46 +44,34 @@ func (b *naivebuffer) Insert(at int, str string) error {
 	if b.Cap() < b.Len()+len(str) {
 		b.Grow(len(str))
 	}
+	bs := []byte(str)
+	b.Write(bs) // just to add to the length
 
 	bb := b.Bytes()
-
-	// convert to runes to deal with runes
-
-	if at == 0 {
-		copy(bb[len(str):], bb[0:])
-		copy(bb[0:len(str)], []byte(str))
-		return nil
-	}
-
-	rs := []rune(string(bb))
-	ri := []rune(str)
-	size := len(ri)
-	if at >= len(rs) {
-		rs = append(rs, ri...)
-		goto copyback
-	}
-
-	// log.Printf("lenrs %d, size: %d. At: %d", len(rs), size, at)
-	rs = append(rs, make([]rune, size)...) // +1 coz this is a dummy package and I can't be arsed to actually do correct counts
-	// log.Printf("lenrs %d at %d, at+size: %d", len(rs), at, at+size)
-
-	copy(rs[at+size:], rs[at:])
-	copy(rs[at:at+size], ri)
-copyback:
-	bb8 := []byte(string(rs))
-	if len(bb8) > len(bb) {
-		bb = append(bb, make([]byte, len(bb8)-len(bb))...)
-	}
-	copy(bb, bb8)
+	offset := byteOffset(bb, at)
+	copy(bb[offset+len(str):], bb[offset:])
+	copy(bb[offset:offset+len(str)], bs)
 	return nil
 }
 
 func (b *naivebuffer) EraseAt(at, n int) error {
 	bb := b.Bytes()
-	rs := []rune(string(bb))
-	copy(rs[at:], rs[at+n:])
-	rs = rs[:len(rs)-n]
-	bb8 := []byte(string(rs))
-	copy(bb, bb8)
+	offset := byteOffset(bb, at)
+	copy(bb[offset:], bb[offset+n:])
+	b.Truncate(len(bb) - n)
 	return nil
+}
+
+// byteOffset takes a slice of bytes, and returns the index at which the expected number of runes there is
+func byteOffset(a []byte, runes int) (offset int) {
+	if runes == 0 {
+		return 0
+	}
+
+	var runeCount int
+	for _, size := utf8.DecodeRune(a[offset:]); offset < len(a) && runeCount < runes; _, size = utf8.DecodeRune(a[offset:]) {
+		offset += size
+		runeCount++
+	}
+	return offset
 }
