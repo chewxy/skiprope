@@ -36,13 +36,13 @@ Please send a pull request :)
 
 # Benchmarks #
 
-There is a benchmark mini-library that is not required, but here are the results:
+There is a benchmark mini-program that is not required for the running, but here are the results:
 
 ```
-go test -run=. -bench=. -benchmem -benchtime=1s 2>err.txt
-BenchmarkNaiveRandomInsert-8   	   10000	    136441 ns/op	   89482 B/op	       6 allocs/op
-BenchmarkRopeRandomInsert-8    	 5000000	       374 ns/op	      66 B/op	       0 allocs/op
-BenchmarkERopeRandomInsert-8   	 1000000	      2109 ns/op	    1161 B/op	      25 allocs/op
+go test -run=^$ -bench=. -benchmem
+BenchmarkNaiveRandomInsert-8   	   50000	     37861 ns/op	      15 B/op	       0 allocs/op
+BenchmarkRopeRandomInsert-8    	 3000000	       496 ns/op	      27 B/op	       0 allocs/op
+BenchmarkERopeRandomInsert-8   	 1000000	      2124 ns/op	    1162 B/op	      25 allocs/op
 PASS
 ```
 

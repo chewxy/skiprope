@@ -82,15 +82,15 @@ func TestPlay2(t *testing.T) {
 	if err := r.Insert(5, "short"); err != nil {
 		t.Fatal(err)
 	}
-	log.Printf("%#v", r)
+	log.Printf("size: %d", r.size)
 	log.Printf("%q", r.String())
 
 	sss := "this is a super long string of characters inserted into the middle "
+	log.Printf("Super long %d", len(sss))
 	if err := r.Insert(5, sss); err != nil {
 		t.Fatal(err)
 	}
 	log.Printf("%d || %d", r.Size(), len(sss))
-	log.Printf("%#v", r)
 	log.Printf("%q", r.String())
 }
 
@@ -106,7 +106,7 @@ func TestQC(t *testing.T) {
 		// check
 		b := r.String()
 		if b != a {
-			t.Errorf("Expected %q. Got %q instead", a, b)
+			t.Errorf("Expected %q. Got %q instead. Len(a): %d | %d", a, b, len(a), r.size)
 			return false
 		}
 
@@ -135,13 +135,16 @@ func TestBasic(t *testing.T) {
 	if err := r.Insert(0, a); err != nil {
 		t.Fatal(err)
 	}
-	if r.Size() != len([]rune(a)) {
+	if r.Size() != len(a) {
 		t.Errorf("Expected same size of %d. Got %d instead", len(a), r.size)
+	}
+	if r.runes != len([]rune(a)) {
+		t.Errorf("Expected same number of runes %d. Got %d instead", len([]rune(a)), r.runes)
 	}
 
 	// Test Indexing
 	if roon := r.Index(4); roon != 'e' {
-		t.Errorf("Expected rune at 5 to be 'e'. Got %q instead", roon)
+		t.Errorf("Expected rune at 4 to be 'e'. Got %q instead", roon)
 	}
 
 	if roon := r.Index(BucketSize); roon != 'n' {
@@ -173,12 +176,25 @@ func TestBefore(t *testing.T) {
 		t.Error(err)
 	}
 
-	if before != 5 {
-		t.Errorf("Expected before to be 5. Got %d instead", before)
+	if before != 6 {
+		t.Errorf("Expected before to be 6. Got %d instead", before)
 	}
 	if char != ' ' {
 		t.Errorf("Expected char to be ' '. Got %q instead", char)
 	}
+}
+
+func TestByteOffset(t *testing.T) {
+	a := []byte("hello world")
+	offset := byteOffset(a, 5)
+	assert.Equal(t, 5, offset)
+	assert.Equal(t, ' ', rune(a[offset]), "Expected 'o'. Got %q instead", a[offset])
+
+	// combining diacritics are one separate character
+	a = []byte("Sitting in a café, writing this test")
+	offset = byteOffset(a, 18)  // 19th character is ',',  and starts at byte offset 20
+	assert.Equal(t, 19, offset) // the combining diacritic is 2 characters wide
+	assert.Equal(t, ',', rune(a[offset]), "Expected ','. Got %q instead", string(a[offset:]))
 }
 
 func ExampleBasic() {
@@ -212,7 +228,7 @@ func ExampleRope_Before() {
 	fmt.Printf("First whitespace before position 70: %d - %q\n", before, char)
 
 	// Output:
-	// First whitespace before position 70: 62 - ' '
+	// First whitespace before position 70: 63 - ' '
 }
 
 // func TestLines(t *testing.T) {
