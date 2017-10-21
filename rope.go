@@ -2,7 +2,6 @@
 package skiprope
 
 import (
-	"fmt"
 	"unicode/utf8"
 )
 
@@ -45,10 +44,6 @@ type skipknot struct {
 	*knot
 	skipped      int // number of bytes between the start and current node and the start of the next
 	skippedRunes int // number of runes between the start and current node and the start of the next
-}
-
-func (s skipknot) GoString() string {
-	return fmt.Sprintf("%#v | skipped %v", s.knot, s.skipped)
 }
 
 // New creates a new Rope.
