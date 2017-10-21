@@ -60,6 +60,15 @@ BenchmarkERopeRandomInsert-8   	 1000000	      2143 ns/op	    1161 B/op	      25
 PASS
 ```
 
+# Fuzz testing
+
+Guard against crashing for certain inputs by running fuzz tests. First, build the instrumented binaries for the tests and then run them.
+
+```
+$ go-fuzz-build github.com/chewxy/skiprope
+$ go-fuzz -bin=skiprope-fuzz.zip -workdir=workdir
+```
+
 # History, Development and Acknowledgements #
 This package started its life as a textbook binary-tree data structure for another personal project of mine. Over time, I decided to add more and more optimizations to it. The original design had a split at every new-line character. 
 
