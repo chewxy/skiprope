@@ -211,6 +211,18 @@ func TestByteOffset(t *testing.T) {
 	assert.Equal(t, ',', rune(a[offset]), "Expected ','. Got %q instead", string(a[offset:]))
 }
 
+func TestRope_ByteOffset(t *testing.T) {
+	r := New()
+	nonUTF8 := "hello world"
+	if err := r.Insert(0, nonUTF8); err != nil {
+		t.Fatal(err)
+	}
+	for i := range nonUTF8 {
+		b := r.ByteOffset(i)
+		assert.Equal(t, i, b)
+	}
+}
+
 func ExampleBasic() {
 	r := New()
 	_ = r.Insert(0, "Hello World. This is a long sentence. The purpose of this long sentence is to make sure there is more than BucketSize worth of runes")
@@ -253,6 +265,21 @@ func ExampleRope_Before() {
 
 	// Output:
 	// First whitespace before position 70: 63 - ' '
+}
+
+func ExampleRope_ByteOffset() {
+	r := New()
+	_ = r.Insert(0, "你好world")
+	b0 := r.ByteOffset(1)     // 1st rune is '好' - 3
+	b1 := r.ByteOffset(2)     // 2nd rune is 'w' - 6
+	bErr := r.ByteOffset(200) // impossible
+
+	fmt.Printf("b0: %d\nb1: %d\nbErr: %d", b0, b1, bErr)
+
+	// Output:
+	// b0: 3
+	// b1: 6
+	// bErr: -1
 }
 
 // func TestLines(t *testing.T) {

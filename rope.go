@@ -181,6 +181,20 @@ func (r *Rope) Index(at int) rune {
 	return char
 }
 
+// ByteOffset returns the byte offset of a rune at the given point.
+func (r *Rope) ByteOffset(at int) int {
+	s := skiplist{r: r}
+	// var k *knot
+	var offset, skippedBytes int
+	var err error
+
+	if _, offset, skippedBytes, err = s.find(at); err != nil {
+		return -1
+	}
+
+	return offset + skippedBytes
+}
+
 // String returns the rope as a full string.
 func (r *Rope) String() string {
 	return r.Substr(0, r.runes)
