@@ -48,13 +48,17 @@ type skipknot struct {
 
 // New creates a new Rope.
 func New() *Rope {
-	r := &Rope{
-		Head: knot{
-			height: 1,
-			nexts:  make([]skipknot, MaxHeight),
-		},
+	var r Rope
+	Init(&r)
+	return &r
+}
+
+// Init re-initializes the rope
+func Init(r *Rope) {
+	r.Head = knot{
+		height: 1,
+		nexts:  make([]skipknot, MaxHeight),
 	}
-	return r
 }
 
 // Size is the length of the rope.
