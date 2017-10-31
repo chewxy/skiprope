@@ -265,11 +265,8 @@ func (r *Rope) Before(at int, fn func(r rune) bool) (retVal int, retRune rune, e
 
 // Write implements the io.Writer interface for a Rope. Existing contents of the Rope will be erased.
 func (r *Rope) Write(p []byte) (int, error) {
-	err := r.EraseAt(0, r.Size())
-	if err != nil {
-		return 0, err
-	}
-	err = r.Insert(0, string(p))
+	r = New()
+	err := r.Insert(0, string(p))
 	if err != nil {
 		return 0, err
 	}
