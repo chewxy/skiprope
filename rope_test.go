@@ -223,6 +223,32 @@ func TestRope_ByteOffset(t *testing.T) {
 	}
 }
 
+func TestRope_Write(t *testing.T) {
+	r := New()
+	expected := "Standing at home, writing this test"
+	written, err := r.Write([]byte(expected))
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, expected, r.String())
+	assert.Equal(t, len(expected), written)
+}
+
+func TestRope_WriteAppend(t *testing.T) {
+	r := New()
+	expected := "Sitting at home, writing this test"
+	written1, err := r.Write([]byte(expected[:5]))
+	if err != nil {
+		t.Fatal(err)
+	}
+	written2, err := r.Write([]byte(expected[5:]))
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, expected, r.String())
+	assert.Equal(t, len(expected), written1+written2)
+}
+
 func ExampleBasic() {
 	r := New()
 	_ = r.Insert(0, "Hello World. This is a long sentence. The purpose of this long sentence is to make sure there is more than BucketSize worth of runes")
