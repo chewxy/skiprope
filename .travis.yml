@@ -23,3 +23,7 @@ before_install:
 script:
   - go test -run=. -coverprofile=profile.cov
   - $HOME/gopath/bin/goveralls -coverprofile=profile.cov -service=travis-ci
+
+matrix:
+  allow_failures:
+    - go: tip

@@ -66,7 +66,7 @@ func TestPlay(t *testing.T) {
 	r.InsertRunes(10, []rune("ADDED"))
 	rs = r.SubstrRunes(0, r.size)
 	if string(rs) != "0123456789ADDED hello world ab2cdefghi fakk1 eir3d" {
-		t.Error("Add failed. Got %q instead", string(rs))
+		t.Errorf("Add failed. Got %q instead", string(rs))
 	}
 
 	// erase "ADDED"
