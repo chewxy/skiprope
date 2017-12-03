@@ -198,6 +198,20 @@ func TestBefore(t *testing.T) {
 	}
 }
 
+func TestIncompleteLast(t *testing.T) {
+	a := "00000000000000000000" +
+		"00000000000000000000" +
+		"00000000000000000000" +
+		"000\xcb"
+
+	r := New()
+	if err := r.Insert(0, a); err != nil {
+		t.Fatal(err)
+	}
+
+	assert.Equal(t, a, r.String())
+}
+
 func TestByteOffset(t *testing.T) {
 	a := []byte("hello world")
 	offset := byteOffset(a, 5)
